@@ -1,0 +1,23 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Local env files
+*.env
+*.env.*
+
+# IDE stuff
+.vscode/
+.idea/
+
+# Node (for frontend)
+node_modules/
+
+# Python (if backend ever uses python lambdas)
+__pycache__/
+*.pyc
+
+# macOS metadata
+.DS_Store
