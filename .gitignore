@@ -3,6 +3,7 @@
 *.tfstate.*
 .terraform/
 .terraform.lock.hcl
+*.tfplan
 
 # Local env files
 *.env
@@ -11,13 +12,53 @@
 # IDE stuff
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
 # Node (for frontend)
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 
-# Python (if backend ever uses python lambdas)
+# Frontend build output
+frontend/dist/
+frontend/.vite/
+
+# Python (backend)
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Backend deployment artifacts
+backend/deploy/
+backend/src/boto3/
+backend/src/botocore/
+backend/src/dateutil/
+backend/src/jmespath/
+backend/src/s3transfer/
+backend/src/urllib3/
+backend/src/six.py
+backend/src/*.dist-info/
 
 # macOS metadata
 .DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
