@@ -114,6 +114,32 @@ npm run build
 
 This creates production-ready files in `frontend/dist/` that can be deployed to any static hosting service.
 
+## Testing
+
+### Backend Testing
+
+Backend uses `pytest` for unit testing with `moto` for AWS service mocking.
+
+```bash
+cd backend
+pip install -r requirements.txt
+pytest
+```
+
+For detailed testing information, see [backend/README_TESTING.md](backend/README_TESTING.md)
+
+### Frontend Testing
+
+Frontend uses `Vitest` for unit testing with React Testing Library.
+
+```bash
+cd frontend
+npm install
+npm test
+```
+
+For detailed testing information, see [frontend/README_TESTING.md](frontend/README_TESTING.md)
+
 ## Deployment
 
 ### Infrastructure Deployment
@@ -207,6 +233,21 @@ Single table design with composite keys:
 - API Gateway: Pay per API call
 
 Designed for minimal traffic (single user, <100 customers).
+
+## Testing
+
+The project includes comprehensive unit tests:
+
+- **Backend**: pytest with moto for AWS mocking
+  - Repository tests (CRUD operations)
+  - Lambda handler tests
+  - Utility function tests
+- **Frontend**: Vitest with React Testing Library
+  - Component tests
+  - API client tests
+  - User interaction tests
+
+See individual README_TESTING.md files in `backend/` and `frontend/` directories for detailed testing instructions.
 
 ## License
 
