@@ -19,7 +19,7 @@ class TestOrderRepo:
             items=[
                 {
                     'productId': product['id'],
-                    'quantity': 5,
+                    'quantity': 5.0,
                     'unitPrice': None  # Should fetch from product
                 }
             ],
@@ -48,7 +48,7 @@ class TestOrderRepo:
             items=[
                 {
                     'productId': product['id'],
-                    'quantity': 3,
+                    'quantity': 3.0,
                     'unitPrice': 12.0  # Custom price
                 }
             ],
@@ -71,7 +71,7 @@ class TestOrderRepo:
             items=[
                 {
                     'productId': product['id'],
-                    'quantity': 10,
+                    'quantity': 10.0,
                     'unitPrice': 15.0
                 }
             ],
@@ -96,7 +96,7 @@ class TestOrderRepo:
             items=[
                 {
                     'productId': product['id'],
-                    'quantity': 5,
+                    'quantity': 5.0,
                     'unitPrice': 15.0
                 }
             ],
@@ -136,11 +136,13 @@ class TestOrderRepo:
         # Create multiple orders
         create_order(
             customer_id=customer['id'],
-            items=[{'productId': product['id'], 'quantity': 1, 'unitPrice': 15.0}]
+            order_date=None,
+            items=[{'productId': product['id'], 'quantity': 1.0, 'unitPrice': 15.0}]
         )
         create_order(
             customer_id=customer['id'],
-            items=[{'productId': product['id'], 'quantity': 2, 'unitPrice': 15.0}]
+            order_date=None,
+            items=[{'productId': product['id'], 'quantity': 2.0, 'unitPrice': 15.0}]
         )
         
         orders = get_customer_orders_list(customer['id'])

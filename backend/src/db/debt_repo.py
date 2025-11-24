@@ -1,4 +1,5 @@
 import uuid
+from decimal import Decimal
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional
 from .dynamo_client import get_table
@@ -29,7 +30,7 @@ def create_debt_adjustment(
         'id': adjustment_id,
         'customerId': customer_id,
         'timestamp': timestamp_str,
-        'amount': amount,
+        'amount': Decimal(str(amount)),
         'reason': reason
     }
     

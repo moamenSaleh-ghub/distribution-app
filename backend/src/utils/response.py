@@ -1,5 +1,13 @@
 import json
+from decimal import Decimal
 from typing import Any, Dict, Optional
+
+
+def decimal_default(obj):
+    """JSON serializer for Decimal objects"""
+    if isinstance(obj, Decimal):
+        return float(obj)
+    raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
 
 
 def success_response(status_code: int, body: Any) -> Dict[str, Any]:
@@ -12,7 +20,7 @@ def success_response(status_code: int, body: Any) -> Dict[str, Any]:
             'Access-Control-Allow-Headers': 'Content-Type',
             'Access-Control-Allow-Methods': 'GET,POST,PATCH,DELETE,OPTIONS'
         },
-        'body': json.dumps(body, default=str)
+        'body': json.dumps(body, default=decimal_default)
     }
 
 

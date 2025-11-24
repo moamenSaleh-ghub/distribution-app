@@ -33,8 +33,9 @@ function CustomerForm({ onSubmit, onCancel }) {
       <h3>Add Customer</h3>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Name *</label>
+          <label htmlFor="customer-name">Name *</label>
           <input
+            id="customer-name"
             type="text"
             name="name"
             value={formData.name}
@@ -44,8 +45,9 @@ function CustomerForm({ onSubmit, onCancel }) {
         </div>
 
         <div className="form-group">
-          <label>Location *</label>
+          <label htmlFor="customer-location">Location *</label>
           <input
+            id="customer-location"
             type="text"
             name="location"
             value={formData.location}
@@ -55,8 +57,9 @@ function CustomerForm({ onSubmit, onCancel }) {
         </div>
 
         <div className="form-group">
-          <label>Phone *</label>
+          <label htmlFor="customer-phone">Phone *</label>
           <input
+            id="customer-phone"
             type="tel"
             name="phone"
             value={formData.phone}
@@ -66,8 +69,9 @@ function CustomerForm({ onSubmit, onCancel }) {
         </div>
 
         <div className="form-group">
-          <label>Email</label>
+          <label htmlFor="customer-email">Email</label>
           <input
+            id="customer-email"
             type="email"
             name="email"
             value={formData.email}
@@ -76,8 +80,9 @@ function CustomerForm({ onSubmit, onCancel }) {
         </div>
 
         <div className="form-group">
-          <label>Notes</label>
+          <label htmlFor="customer-notes">Notes</label>
           <textarea
+            id="customer-notes"
             name="notes"
             value={formData.notes}
             onChange={handleChange}

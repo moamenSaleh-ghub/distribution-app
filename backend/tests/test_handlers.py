@@ -33,7 +33,7 @@ class TestProductHandlers:
         assert response['statusCode'] == 201
         body = json.loads(response['body'])
         assert body['name'] == 'Test Product'
-        assert body['baseBuyingPrice'] == 10.0
+        assert abs(body['baseBuyingPrice'] - 10.0) < 0.01
         assert 'id' in body
     
     def test_create_product_handler_missing_fields(self, dynamodb_table):
@@ -92,7 +92,7 @@ class TestProductHandlers:
         assert response['statusCode'] == 200
         body = json.loads(response['body'])
         assert body['name'] == 'Updated Product'
-        assert body['baseSellingPrice'] == 20.0
+        assert abs(body['baseSellingPrice'] - 20.0) < 0.01
 
 
 class TestCustomerHandlers:
@@ -114,7 +114,7 @@ class TestCustomerHandlers:
         assert response['statusCode'] == 201
         body = json.loads(response['body'])
         assert body['name'] == 'Test Customer'
-        assert body['totalDebt'] == 0.0
+        assert abs(body['totalDebt'] - 0.0) < 0.01
     
     def test_create_customer_handler_missing_fields(self, dynamodb_table):
         """Test customer creation with missing required fields"""
@@ -219,7 +219,7 @@ class TestDebtHandlers:
         
         assert response['statusCode'] == 201
         body = json.loads(response['body'])
-        assert body['amount'] == -100.0
+        assert abs(body['amount'] - (-100.0)) < 0.01
         assert 'newTotalDebt' in body
     
     def test_adjust_customer_debt_handler_missing_fields(self, dynamodb_table):

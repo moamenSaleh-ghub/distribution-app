@@ -13,16 +13,15 @@ def handler(event, context):
         
         products = list_products(search=search, include_inactive=include_inactive)
         
-        # Add computed effective prices
+        # Add computed effective prices (convert Decimal to float for computation)
+        from decimal import Decimal
         for product in products:
-            product['effectiveBuyingPrice'] = compute_effective_price(
-                product['baseBuyingPrice'],
-                product.get('discountPercent')
-            )
-            product['effectiveSellingPrice'] = compute_effective_price(
-                product['baseSellingPrice'],
-                product.get('discountPercent')
-            )
+            base_buying = float(product['baseBuyingPrice']) if isinstance(product['baseBuyingPrice'], Decimal) else product['baseBuyingPrice']
+            base_selling = float(product['baseSellingPrice']) if isinstance(product['baseSellingPrice'], Decimal) else product['baseSellingPrice']
+            discount = float(product.get('discountPercent', 0)) if isinstance(product.get('discountPercent', 0), Decimal) else product.get('discountPercent', 0)
+            
+            product['effectiveBuyingPrice'] = compute_effective_price(base_buying, discount)
+            product['effectiveSellingPrice'] = compute_effective_price(base_selling, discount)
         
         return success_response(200, {
             'items': products,

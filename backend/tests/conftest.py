@@ -1,13 +1,22 @@
 import pytest
 import boto3
-from moto import mock_dynamodb
-from src.db.dynamo_client import get_table
+import os
+from moto import mock_aws
+from unittest.mock import patch
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def dynamodb_table():
     """Create a mock DynamoDB table for testing"""
-    with mock_dynamodb():
+    with mock_aws():
+        # Set environment variables
+        os.environ['DYNAMODB_TABLE_NAME'] = 'distribution-app-dev'
+        os.environ['AWS_REGION'] = 'eu-central-1'
+        os.environ['AWS_ACCESS_KEY_ID'] = 'testing'
+        os.environ['AWS_SECRET_ACCESS_KEY'] = 'testing'
+        os.environ['AWS_SECURITY_TOKEN'] = 'testing'
+        os.environ['AWS_SESSION_TOKEN'] = 'testing'
+        
         # Create the table
         dynamodb = boto3.resource('dynamodb', region_name='eu-central-1')
         table = dynamodb.create_table(
@@ -39,9 +48,10 @@ def dynamodb_table():
             BillingMode='PAY_PER_REQUEST'
         )
         
-        # Set environment variable for the table name
-        import os
-        os.environ['DYNAMODB_TABLE_NAME'] = 'distribution-app-dev'
+        # Patch the dynamo_client to use the mocked table
+        from src.db import dynamo_client
+        dynamo_client.table = table
+        dynamo_client.dynamodb = dynamodb
         
         yield table
 

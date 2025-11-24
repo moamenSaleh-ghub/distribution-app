@@ -49,8 +49,9 @@ function ProductForm({ product, onSubmit, onCancel }) {
       <h3>{product ? 'Edit Product' : 'Add Product'}</h3>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Name *</label>
+          <label htmlFor="product-name">Name *</label>
           <input
+            id="product-name"
             type="text"
             name="name"
             value={formData.name}
@@ -60,8 +61,9 @@ function ProductForm({ product, onSubmit, onCancel }) {
         </div>
 
         <div className="form-group">
-          <label>Base Buying Price *</label>
+          <label htmlFor="product-baseBuyingPrice">Base Buying Price *</label>
           <input
+            id="product-baseBuyingPrice"
             type="number"
             step="0.01"
             min="0"
@@ -73,8 +75,9 @@ function ProductForm({ product, onSubmit, onCancel }) {
         </div>
 
         <div className="form-group">
-          <label>Base Selling Price *</label>
+          <label htmlFor="product-baseSellingPrice">Base Selling Price *</label>
           <input
+            id="product-baseSellingPrice"
             type="number"
             step="0.01"
             min="0"
@@ -86,8 +89,9 @@ function ProductForm({ product, onSubmit, onCancel }) {
         </div>
 
         <div className="form-group">
-          <label>Discount Percent (0-100)</label>
+          <label htmlFor="product-discountPercent">Discount Percent (0-100)</label>
           <input
+            id="product-discountPercent"
             type="number"
             step="0.01"
             min="0"
@@ -99,8 +103,9 @@ function ProductForm({ product, onSubmit, onCancel }) {
         </div>
 
         <div className="form-group">
-          <label>Image Key (S3)</label>
+          <label htmlFor="product-imageKey">Image Key (S3)</label>
           <input
+            id="product-imageKey"
             type="text"
             name="imageKey"
             value={formData.imageKey}
@@ -110,8 +115,9 @@ function ProductForm({ product, onSubmit, onCancel }) {
         </div>
 
         <div className="form-group">
-          <label>
+          <label htmlFor="product-isActive">
             <input
+              id="product-isActive"
               type="checkbox"
               name="isActive"
               checked={formData.isActive}

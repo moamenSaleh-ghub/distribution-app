@@ -1,4 +1,5 @@
 import uuid
+from decimal import Decimal
 from datetime import datetime, timezone
 from typing import List, Dict, Any, Optional
 from .dynamo_client import get_table
@@ -26,11 +27,11 @@ def create_order(
     
     # Process items and compute prices
     processed_items = []
-    subtotal = 0.0
+    subtotal = Decimal('0.0')
     
     for item in items:
         product_id = item['productId']
-        quantity = item['quantity']
+        quantity = Decimal(str(item['quantity']))
         unit_price = item.get('unitPrice')
         
         # If unitPrice not provided, fetch product and compute
@@ -39,11 +40,15 @@ def create_order(
             if not product:
                 raise ValueError(f"Product {product_id} not found")
             
-            discount_percent = product.get('discountPercent', 0)
+            discount_percent = product.get('discountPercent', Decimal('0'))
             base_selling_price = product['baseSellingPrice']
-            unit_price = compute_effective_price(base_selling_price, discount_percent)
+            # Convert Decimal to float for computation, then back to Decimal
+            base_price_float = float(base_selling_price) if isinstance(base_selling_price, Decimal) else float(base_selling_price)
+            discount_float = float(discount_percent) if isinstance(discount_percent, Decimal) else float(discount_percent)
+            unit_price = Decimal(str(compute_effective_price(base_price_float, discount_float)))
             product_name = product['name']
         else:
+            unit_price = Decimal(str(unit_price))
             product_name = item.get('productNameSnapshot', 'Unknown Product')
         
         line_total = unit_price * quantity
@@ -57,8 +62,10 @@ def create_order(
             'lineTotal': line_total
         })
     
-    total_amount = subtotal - discount
-    debt_change = total_amount - paid_now
+    discount_decimal = Decimal(str(discount))
+    paid_now_decimal = Decimal(str(paid_now))
+    total_amount = subtotal - discount_decimal
+    debt_change = total_amount - paid_now_decimal
     
     order_item = {
         'pk': f'CUSTOMER#{customer_id}',
@@ -69,9 +76,9 @@ def create_order(
         'orderDate': order_date_str,
         'items': processed_items,
         'subtotal': subtotal,
-        'discount': discount,
+        'discount': discount_decimal,
         'totalAmount': total_amount,
-        'paidNow': paid_now,
+        'paidNow': paid_now_decimal,
         'debtChange': debt_change,
         'notes': notes
     }

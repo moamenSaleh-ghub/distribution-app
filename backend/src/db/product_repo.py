@@ -1,4 +1,5 @@
 import uuid
+from decimal import Decimal
 from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 from .dynamo_client import get_table
@@ -24,9 +25,9 @@ def create_product(
         'entityType': 'PRODUCT',
         'id': product_id,
         'name': name,
-        'baseBuyingPrice': base_buying_price,
-        'baseSellingPrice': base_selling_price,
-        'discountPercent': discount,
+        'baseBuyingPrice': Decimal(str(base_buying_price)),
+        'baseSellingPrice': Decimal(str(base_selling_price)),
+        'discountPercent': Decimal(str(discount)),
         'imageKey': image_key,
         'isActive': is_active,
         'createdAt': now,
@@ -74,15 +75,15 @@ def update_product(
     
     if base_buying_price is not None:
         update_expression_parts.append('baseBuyingPrice = :baseBuyingPrice')
-        expression_attribute_values[':baseBuyingPrice'] = base_buying_price
+        expression_attribute_values[':baseBuyingPrice'] = Decimal(str(base_buying_price))
     
     if base_selling_price is not None:
         update_expression_parts.append('baseSellingPrice = :baseSellingPrice')
-        expression_attribute_values[':baseSellingPrice'] = base_selling_price
+        expression_attribute_values[':baseSellingPrice'] = Decimal(str(base_selling_price))
     
     if discount_percent is not None:
         update_expression_parts.append('discountPercent = :discountPercent')
-        expression_attribute_values[':discountPercent'] = discount_percent
+        expression_attribute_values[':discountPercent'] = Decimal(str(discount_percent))
     
     if image_key is not None:
         update_expression_parts.append('imageKey = :imageKey')
@@ -146,6 +147,12 @@ def list_products(
 
 def compute_effective_price(base_price: float, discount_percent: Optional[float]) -> float:
     """Compute effective price after discount"""
+    from decimal import Decimal
+    # Convert Decimal to float if needed
+    if isinstance(base_price, Decimal):
+        base_price = float(base_price)
+    if isinstance(discount_percent, Decimal):
+        discount_percent = float(discount_percent)
     if discount_percent is None or discount_percent == 0:
         return base_price
     return base_price * (1 - discount_percent / 100)

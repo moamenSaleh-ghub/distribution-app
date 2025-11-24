@@ -1,4 +1,5 @@
 import uuid
+from decimal import Decimal
 from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 from .dynamo_client import get_table
@@ -25,7 +26,7 @@ def create_customer(
         'location': location,
         'phone': phone,
         'email': email,
-        'totalDebt': 0.0,
+        'totalDebt': Decimal('0.0'),
         'notes': notes,
         'isActive': is_active,
         'createdAt': now,
@@ -61,7 +62,7 @@ def update_customer_debt(customer_id: str, debt_change: float) -> Optional[Dict[
         },
         UpdateExpression='ADD totalDebt :debtChange SET updatedAt = :updatedAt',
         ExpressionAttributeValues={
-            ':debtChange': debt_change,
+            ':debtChange': Decimal(str(debt_change)),
             ':updatedAt': datetime.now(timezone.utc).isoformat()
         },
         ReturnValues='ALL_NEW'
