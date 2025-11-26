@@ -5,6 +5,18 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 export const apiClient = {
   async request(endpoint, options = {}) {
     const url = `${API_BASE_URL}${endpoint}`
+    
+    // Get token from localStorage
+    const token = localStorage.getItem('authToken')
+    
+    if (!token) {
+      // No token - redirect to login
+      if (!window.location.pathname.includes('/login')) {
+        window.location.href = '/login'
+      }
+      throw new Error('Not authenticated. Please login.')
+    }
+    
     const config = {
       headers: {
         'Content-Type': 'application/json',
@@ -13,16 +25,49 @@ export const apiClient = {
       ...options,
     }
 
+    // Add Authorization header
+    config.headers['Authorization'] = `Bearer ${token}`
+
     if (config.body && typeof config.body === 'object') {
       config.body = JSON.stringify(config.body)
     }
 
     try {
       const response = await fetch(url, config)
-      const data = await response.json()
+      
+      // Handle 401 Unauthorized - token invalid or expired
+      if (response.status === 401) {
+        // Clear token and redirect to login
+        localStorage.removeItem('authToken')
+        // Only redirect if we're not already on the login page
+        if (!window.location.pathname.includes('/login')) {
+          window.location.href = '/login'
+        }
+        let errorData = {}
+        try {
+          const text = await response.text()
+          errorData = text ? JSON.parse(text) : {}
+        } catch (e) {
+          // Ignore parse errors
+        }
+        throw new Error(errorData.message || 'Unauthorized. Please login again.')
+      }
+
+      // Parse response as JSON
+      let data
+      try {
+        const text = await response.text()
+        data = text ? JSON.parse(text) : {}
+      } catch (parseError) {
+        console.error('Failed to parse response as JSON:', parseError)
+        if (!response.ok) {
+          throw new Error(`Server error: ${response.status} ${response.statusText}`)
+        }
+        throw new Error('Invalid response from server')
+      }
 
       if (!response.ok) {
-        throw new Error(data.message || 'Request failed')
+        throw new Error(data.message || `Request failed: ${response.status} ${response.statusText}`)
       }
 
       return data

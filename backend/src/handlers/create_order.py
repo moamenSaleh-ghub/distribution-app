@@ -1,10 +1,31 @@
 import json
 from src.db.order_repo import create_order
 from src.utils.response import success_response, error_response
+from src.auth import extract_and_verify_token, AuthenticationError
 
 
 def handler(event, context):
     """Create a new order"""
+    # Handle CORS preflight (OPTIONS) requests
+    if event.get('requestContext', {}).get('http', {}).get('method') == 'OPTIONS' or \
+       event.get('httpMethod') == 'OPTIONS':
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                'Access-Control-Max-Age': '86400'
+            },
+            'body': ''
+        }
+    
+    # Verify JWT token
+    try:
+        extract_and_verify_token(event)
+    except AuthenticationError as e:
+        return error_response(401, str(e), 'UNAUTHORIZED')
+    
     try:
         body = json.loads(event.get('body', '{}'))
         

@@ -49,6 +49,14 @@ resource "aws_lambda_permission" "api_gw_debt" {
   source_arn    = "${aws_apigatewayv2_api.main.execution_arn}/*/*"
 }
 
+resource "aws_lambda_permission" "api_gw_login" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.login.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.main.execution_arn}/*/*"
+}
+
 # API Gateway Integrations
 resource "aws_apigatewayv2_integration" "create_product" {
   api_id = aws_apigatewayv2_api.main.id
@@ -130,6 +138,14 @@ resource "aws_apigatewayv2_integration" "adjust_customer_debt" {
   integration_method = "POST"
 }
 
+resource "aws_apigatewayv2_integration" "login" {
+  api_id = aws_apigatewayv2_api.main.id
+
+  integration_type   = "AWS_PROXY"
+  integration_uri    = aws_lambda_function.login.invoke_arn
+  integration_method = "POST"
+}
+
 # API Gateway Routes
 resource "aws_apigatewayv2_route" "create_product" {
   api_id    = aws_apigatewayv2_api.main.id
@@ -191,7 +207,41 @@ resource "aws_apigatewayv2_route" "adjust_customer_debt" {
   target    = "integrations/${aws_apigatewayv2_integration.adjust_customer_debt.id}"
 }
 
-# CORS preflight
+resource "aws_apigatewayv2_route" "login" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "POST /login"
+  target    = "integrations/${aws_apigatewayv2_integration.login.id}"
+}
+
+# CORS preflight for /login
+resource "aws_apigatewayv2_route" "options_login" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "OPTIONS /login"
+  target    = "integrations/${aws_apigatewayv2_integration.login.id}"
+}
+
+# CORS preflight for /products
+resource "aws_apigatewayv2_route" "options_products" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "OPTIONS /products"
+  target    = "integrations/${aws_apigatewayv2_integration.get_products.id}"
+}
+
+# CORS preflight for /customers
+resource "aws_apigatewayv2_route" "options_customers" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "OPTIONS /customers"
+  target    = "integrations/${aws_apigatewayv2_integration.get_customers.id}"
+}
+
+# CORS preflight for /orders
+resource "aws_apigatewayv2_route" "options_orders" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "OPTIONS /orders"
+  target    = "integrations/${aws_apigatewayv2_integration.create_order.id}"
+}
+
+# CORS preflight for other routes (catch-all)
 resource "aws_apigatewayv2_route" "options" {
   api_id    = aws_apigatewayv2_api.main.id
   route_key = "OPTIONS /{proxy+}"

@@ -1,10 +1,17 @@
 import json
 from src.db.customer_repo import create_customer
 from src.utils.response import success_response, error_response
+from src.auth import extract_and_verify_token, AuthenticationError
 
 
 def handler(event, context):
     """Create a new customer"""
+    # Verify JWT token
+    try:
+        extract_and_verify_token(event)
+    except AuthenticationError as e:
+        return error_response(401, str(e), 'UNAUTHORIZED')
+    
     try:
         body = json.loads(event.get('body', '{}'))
         

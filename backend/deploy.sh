@@ -30,13 +30,21 @@ LAMBDA_FUNCTIONS=(
   "create_order"
   "get_customer_orders"
   "adjust_customer_debt"
+  "login"
 )
 
 for func in "${LAMBDA_FUNCTIONS[@]}"; do
   echo "Packaging $func..."
-  cd src
-  zip -r "../deploy/${func}.zip" . -x "*.pyc" -x "__pycache__/*" -x "*/__pycache__/*"
-  cd ..
+  # Package from parent directory so src/ is at the root of the zip
+  # Exclude native libraries (.so files) that are platform-specific
+  zip -r "deploy/${func}.zip" src/ \
+    -x "*.pyc" \
+    -x "src/__pycache__/*" \
+    -x "src/*/__pycache__/*" \
+    -x "src/*/*/__pycache__/*" \
+    -x "*.so" \
+    -x "src/cryptography/*" \
+    -x "src/_cffi_backend*"
 done
 
 echo "All Lambda functions packaged successfully!"

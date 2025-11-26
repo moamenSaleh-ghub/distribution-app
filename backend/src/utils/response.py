@@ -17,7 +17,7 @@ def success_response(status_code: int, body: Any) -> Dict[str, Any]:
         'headers': {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Headers': 'Content-Type,Authorization',
             'Access-Control-Allow-Methods': 'GET,POST,PATCH,DELETE,OPTIONS'
         },
         'body': json.dumps(body, default=decimal_default)
@@ -37,7 +37,7 @@ def error_response(status_code: int, message: str, code: Optional[str] = None) -
         'headers': {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Headers': 'Content-Type,Authorization',
             'Access-Control-Allow-Methods': 'GET,POST,PATCH,DELETE,OPTIONS'
         },
         'body': json.dumps(error_body)

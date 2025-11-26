@@ -172,3 +172,21 @@ resource "aws_lambda_function" "adjust_customer_debt" {
   source_code_hash = filebase64sha256("${path.module}/../backend/deploy/adjust_customer_debt.zip")
 }
 
+# Lambda function for login
+resource "aws_lambda_function" "login" {
+  filename         = "${path.module}/../backend/deploy/login.zip"
+  function_name    = "${var.app_name}-login-${var.environment}"
+  role            = aws_iam_role.lambda_role.arn
+  handler         = "src.handlers.login.handler"
+  runtime         = "python3.12"
+  timeout         = 30
+
+  environment {
+    variables = {
+      DYNAMODB_TABLE_NAME = aws_dynamodb_table.main.name
+    }
+  }
+
+  source_code_hash = filebase64sha256("${path.module}/../backend/deploy/login.zip")
+}
+

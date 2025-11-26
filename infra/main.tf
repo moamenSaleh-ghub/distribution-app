@@ -102,7 +102,10 @@ resource "aws_iam_role" "lambda_role" {
   }
 }
 
-# IAM Policy for Lambda to access DynamoDB and S3
+# Data source for AWS account ID
+data "aws_caller_identity" "current" {}
+
+# IAM Policy for Lambda to access DynamoDB, S3, and SSM
 resource "aws_iam_role_policy" "lambda_policy" {
   name = "${var.app_name}-lambda-policy-${var.environment}"
   role = aws_iam_role.lambda_role.id
@@ -149,6 +152,15 @@ resource "aws_iam_role_policy" "lambda_policy" {
           "s3:ListBucket"
         ]
         Resource = aws_s3_bucket.product_images.arn
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ssm:GetParameter",
+          "ssm:GetParameters",
+          "ssm:GetParameterHistory"
+        ]
+        Resource = "arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/distribution-app/password"
       }
     ]
   })
